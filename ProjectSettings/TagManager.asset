@@ -13,9 +13,9 @@ TagManager:
   - Water
   - UI
   - HitAble
-  - 
-  - 
-  - 
+  - Obstacle
+  - Shell
+  - Crosshair
   - 
   - 
   - 
@@ -41,4 +41,7 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Crosshair
+    uniqueID: 230313377
     locked: 0

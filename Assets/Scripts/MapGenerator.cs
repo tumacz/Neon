@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using System.Net.NetworkInformation;
+using UnityEngine.Tilemaps;
 
 public class MapGenerator : MonoBehaviour
 {
@@ -19,17 +20,27 @@ public class MapGenerator : MonoBehaviour
 
     private List<Coord> _allTileCoords;
     private Queue<Coord> _shuffledTileCoords;
+    private Queue<Coord> _shuffledOpenTileCoords;
+    Transform[,] _tileMap; 
 
-    private Map _currentMap;
+    public Map _currentMap;
 
     void Start()
     {
+        GenerateMap();
+        FindObjectOfType<Spawner>().OnNewWave += OnNewWave;
+    }
+
+    private void OnNewWave(int waveNumber)
+    {
+        mapIndex = waveNumber - 1;
         GenerateMap();
     }
 
     public void GenerateMap()
     {
         _currentMap = maps[mapIndex];
+        _tileMap = new Transform[_currentMap._mapSize.x, _currentMap._mapSize.y];
         GetComponent<BoxCollider>().size = new Vector3(_currentMap._mapSize.x * _tileSize,0.5f, _currentMap._mapSize.y * _tileSize);
         GenerateCoords();
         string holderName = GenerateMapHolder();
@@ -62,6 +73,7 @@ public class MapGenerator : MonoBehaviour
                 Transform newTile = Instantiate(_tilePrefab, tilePosition, Quaternion.Euler(Vector3.right * 90)) as Transform;
                 newTile.localScale = Vector3.one * (1 - _outlinePercent) * _tileSize;
                 newTile.parent = mapHolder;
+                _tileMap[x, y] = newTile;
             }
         }
         return mapHolder;
@@ -88,6 +100,7 @@ public class MapGenerator : MonoBehaviour
 
         int obstacleCount = (int)(_currentMap._mapSize.x * _currentMap._mapSize.y * _currentMap._obstaclePercent);
         int currentObstacleCount = 0;
+        List<Coord> allOpenCoords = new List<Coord>(_allTileCoords); //list of tiles without obstacles
 
         //generate obstacles
         for (int i = 0; i < obstacleCount; i++)
@@ -110,6 +123,8 @@ public class MapGenerator : MonoBehaviour
                 float colorPrecent = randomCoord.y / (float)_currentMap._mapSize.y;
                 obstacleMaterial.color = Color.Lerp(_currentMap._foregroundColour, _currentMap._backgroundColour, colorPrecent);
                 obstacleRenderer.sharedMaterial = obstacleMaterial;
+
+                allOpenCoords.Remove(randomCoord);
             }
             else
             {
@@ -117,22 +132,27 @@ public class MapGenerator : MonoBehaviour
                 currentObstacleCount--;
             }
         }
+        _shuffledOpenTileCoords = new Queue<Coord>(Utility.ShuffleArray(allOpenCoords.ToArray(), _currentMap._seed));
     }
 
     private void GenerateBoundries(Transform mapHolder)
     {
         Transform leftMapEdge = Instantiate(_mapEdgePrefab, (Vector3.left * (_currentMap._mapSize.x) / 2f + Vector3.up * .5f) * _tileSize, Quaternion.identity) as Transform;
         leftMapEdge.parent = mapHolder;
-        leftMapEdge.localScale = new Vector3(Mathf.Epsilon, 1, _currentMap._mapSize.y + 1) * _tileSize;
+        leftMapEdge.localScale = new Vector3(Mathf.Epsilon, 1, _currentMap._mapSize.y) * _tileSize;
         Transform rightMapEdge = Instantiate(_mapEdgePrefab, (Vector3.right * (_currentMap._mapSize.x) / 2f + Vector3.up * .5f) * _tileSize, Quaternion.identity) as Transform;
         rightMapEdge.parent = mapHolder;
-        rightMapEdge.localScale = new Vector3(Mathf.Epsilon, 1, _currentMap._mapSize.y + 1) * _tileSize;
+        rightMapEdge.localScale = new Vector3(Mathf.Epsilon, 1, _currentMap._mapSize.y) * _tileSize;
         Transform upMapEdge = Instantiate(_mapEdgePrefab, (Vector3.forward * (_currentMap._mapSize.y) / 2f + Vector3.up * .5f) * _tileSize, Quaternion.identity) as Transform;
         upMapEdge.parent = mapHolder;
-        upMapEdge.localScale = new Vector3(_currentMap._mapSize.x + 1, 1, Mathf.Epsilon) * _tileSize;
+        upMapEdge.localScale = new Vector3(_currentMap._mapSize.x, 1, Mathf.Epsilon) * _tileSize;
         Transform bottomMapEdge = Instantiate(_mapEdgePrefab, (Vector3.back * (_currentMap._mapSize.y) / 2f + Vector3.up * .5f) * _tileSize, Quaternion.identity) as Transform;
         bottomMapEdge.parent = mapHolder;
-        bottomMapEdge.localScale = new Vector3(_currentMap._mapSize.x + 1, 1, Mathf.Epsilon) * _tileSize;
+        bottomMapEdge.localScale = new Vector3(_currentMap._mapSize.x, 1, Mathf.Epsilon) * _tileSize;
+        Transform groundMapEdge = Instantiate(_mapEdgePrefab, (Vector3.zero - Vector3.up * .1f) * _tileSize, Quaternion.identity) as Transform;
+        groundMapEdge.localScale = new Vector3(_currentMap._mapSize.x +10, 0.1f, _currentMap._mapSize.y + 10) * _tileSize;
+        groundMapEdge.parent = mapHolder;
+        groundMapEdge.gameObject.layer = LayerMask.NameToLayer("Ground");
     }
 
     private bool MapIsFullyAccessible(bool[,] obstacleMap, int currentObstacleCount) //bfs
@@ -183,11 +203,27 @@ public class MapGenerator : MonoBehaviour
         return new Vector3(-_currentMap._mapSize.x / 2f + 0.5f + x, 0, -_currentMap._mapSize.y / 2f + 0.5f + y) * _tileSize;
     }
 
+    public Transform TileFromPosition(Vector3 position)
+    {
+        int x = Mathf.RoundToInt(position.x / _tileSize + (_currentMap._mapSize.x - 1) / 2f);
+        int y = Mathf.RoundToInt(position.z / _tileSize + (_currentMap._mapSize.y - 1) / 2f);
+        x = Mathf.Clamp(x, 0, _tileMap.GetLength(0) - 1);
+        y = Mathf.Clamp(y, 0, _tileMap.GetLength(1) - 1);
+        return _tileMap[x, y];
+    }
+
     public Coord GetRandomCoord()
     {
         Coord randomCoord = _shuffledTileCoords.Dequeue();
         _shuffledTileCoords.Enqueue(randomCoord);
         return randomCoord;
+    }
+
+    public Transform GetRandomOpenTile()
+    {
+        Coord randomCoord = _shuffledOpenTileCoords.Dequeue();
+        _shuffledOpenTileCoords.Enqueue(randomCoord);
+        return _tileMap[randomCoord.x, randomCoord.y];
     }
 
     [System.Serializable]
@@ -210,6 +246,19 @@ public class MapGenerator : MonoBehaviour
         public static bool operator !=(Coord c1, Coord c2)
         {
             return !(c1 == c2);
+        }
+        public override bool Equals(object obj)
+        {
+            if (!(obj is Coord))
+                return false;
+
+            Coord other = (Coord)obj;
+            return this == other;
+        }
+
+        public override int GetHashCode()
+        {
+            return (x << 16) ^ y; // Dowolna funkcja mieszaj¹ca, dostosuj j¹ do swoich potrzeb
         }
 
     }

@@ -19,32 +19,47 @@ public class Enemy : HealthComponent
     [SerializeField] private float _timeBetweenAttacks = 5f;
     [SerializeField] private float _nextAttackTime;
     [SerializeField] private Color _originalColor;
+    [SerializeField] private ParticleSystem _enemyHitEffect;
     [SerializeField] private int _damageRate = 1;
 
     private float _enemyCollsionRadius;
     private float _targetCollsionRadius;
 
-    protected override void Start()
+    private void Awake()
     {
-        base.Start();
-
         _nav = GetComponent<NavMeshAgent>();
-        _skinMaterial = GetComponent<Renderer>().material;
-        _originalColor = _skinMaterial.color;
+
 
         if (GameObject.FindGameObjectWithTag("Player") != null)
         {
-            _currentState = State.Chasing;
+
             _target = GameObject.FindGameObjectWithTag("Player").transform;
             _targetHealth = _target.GetComponent<HealthComponent>();
-            _targetHealth.OnDeath += OnTargetDeath;
             _hasTarget = true;
 
             _enemyCollsionRadius = GetComponent<CapsuleCollider>().radius;
             _targetCollsionRadius = _target.GetComponent<CapsuleCollider>().radius;
+        }
+    }
+    protected override void Start()
+    {
+        base.Start();
+        if (_hasTarget)
+        {
+            _currentState = State.Chasing;
+            _targetHealth.OnDeath += OnTargetDeath;
 
             StartCoroutine(UpdatePath());
         }
+    }
+
+    public override void TakeHit(int damage, Vector3 hitPoint, Vector3 hitDirection)
+    {
+        if (damage >= _health)
+        {
+            Destroy(Instantiate(_enemyHitEffect, hitPoint, Quaternion.FromToRotation(Vector3.forward, hitDirection)) as ParticleSystem, _enemyHitEffect.startLifetime);
+        }
+        base.TakeHit(damage, hitPoint, hitDirection);
     }
 
     private void FixedUpdate()
@@ -110,6 +125,21 @@ public class Enemy : HealthComponent
             }
             yield return new WaitForSeconds(refreshRate);
         }
+    }
+
+    public void SetCharacteristics(float moveSpeed, int hitsToKillPlayer, int enemyHealth, Color skinColour)
+    {
+        _nav.speed = moveSpeed;
+
+        if (_hasTarget)
+        {
+            _damageRate = Mathf.CeilToInt(_targetHealth._startingHealth / hitsToKillPlayer);
+        }
+        _startingHealth = enemyHealth;
+
+        _skinMaterial = GetComponent<Renderer>().sharedMaterial;
+        _skinMaterial.color = skinColour;
+        _originalColor = _skinMaterial.color;
     }
 
     private void OnTargetDeath()

@@ -44,3 +44,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89122a2ac2487fb4c8e72cc0269a25d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  wawes:
+  - enemyCount: 5
+    timeBetwenSpawn: 2
+    moveSpeed: 4
+    hitsToKillPlayer: 4
+    enemyHealth: 2
+    enemyColor: {r: 0.05900677, g: 0.11476362, b: 0.735849, a: 0}
+    infinite: 0
+  - enemyCount: 5
+    timeBetwenSpawn: 2
+    moveSpeed: 4
+    hitsToKillPlayer: 2
+    enemyHealth: 2
+    enemyColor: {r: 0.6132076, g: 0.0028924954, b: 0.0028924954, a: 0}
+    infinite: 0
+  - enemyCount: 5
+    timeBetwenSpawn: 2
+    moveSpeed: 4
+    hitsToKillPlayer: 1
+    enemyHealth: 5
+    enemyColor: {r: 0.04757969, g: 0.8962264, b: 0.04650232, a: 0}
+    infinite: 0
+  - enemyCount: 5
+    timeBetwenSpawn: 2
+    moveSpeed: 4
+    hitsToKillPlayer: 3
+    enemyHealth: 1
+    enemyColor: {r: 0.8820176, g: 0.9622642, b: 0.013616921, a: 0}
+    infinite: 0
+  - enemyCount: -1
+    timeBetwenSpawn: 2
+    moveSpeed: 4
+    hitsToKillPlayer: 2
+    enemyHealth: 2
+    enemyColor: {r: 0, g: 0, b: 0, a: 0}
+    infinite: 1
+  enemy: {fileID: 6367609390767979875, guid: 775b4f31355d1974c92969d03ce4869a, type: 3}

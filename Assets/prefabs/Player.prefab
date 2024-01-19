@@ -16,9 +16,10 @@ GameObject:
   - component: {fileID: 3334194306313338628}
   - component: {fileID: 8282097201427845395}
   - component: {fileID: 3683331889660185646}
+  - component: {fileID: 2724959708690991412}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -181,8 +182,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac55d879c0fc5394c8f888e928776847, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _startingHealth: 10000
   _playerSO: {fileID: 11400000, guid: 6cc679105706766439c3efbcec16a22c, type: 2}
-  playerSpeed: 2
+  playerSpeed: 6
+  _actualPos: {fileID: 0}
 --- !u!114 &3683331889660185646
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -195,8 +198,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ead2bc9d030d0e4f9beab7e491d0d6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _weaponHolder: {fileID: 0}
+  _weaponHolder: {fileID: 6101954689603299548}
   _currentWeapon: {fileID: 0}
+  _startGun: {fileID: -2362318522407504708, guid: 713d5eef0c31de74a90f402044caa571, type: 3}
+--- !u!54 &2724959708690991412
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2474388742348118429}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 126
+  m_CollisionDetection: 0
 --- !u!1 &2607075462452963662
 GameObject:
   m_ObjectHideFlags: 0
@@ -210,7 +241,7 @@ GameObject:
   - component: {fileID: 3734548001491389664}
   - component: {fileID: 7970431587969751027}
   m_Layer: 0
-  m_Name: Cube
+  m_Name: DirectionPointer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -327,7 +358,7 @@ Transform:
   m_GameObject: {fileID: 9097153830926383902}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.3, y: 1, z: 0.45}
+  m_LocalPosition: {x: 0.32, y: 0, z: 0.64}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
