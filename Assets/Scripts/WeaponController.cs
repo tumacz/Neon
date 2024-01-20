@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -25,20 +25,20 @@ public class WeaponController : MonoBehaviour
             {
                 Destroy(_currentWeapon.gameObject);
             }
-            _currentWeapon = Instantiate(value, _weaponHolder.position, _weaponHolder.rotation, _weaponHolder);//zapytaæ o value i czy to zagrapozniej w playercontoller
+            _currentWeapon = Instantiate(value, _weaponHolder.position, _weaponHolder.rotation, _weaponHolder);//zapytaÃ¦ o value i czy to zagrapozniej w playercontoller
         }
     }
 
-    public void EquipWeapon(Weapon weaponToEquip) // przygotowanie pod system zmiany broni, mo¿e byæ wywo³ywane po zetknieciu sie z zbieranym przedmiotem, mo¿na siê pokusic o zmiane na coœ bardziej generycznego np jakies znajdzki typu zdrowie itp
+    public void EquipWeapon(Weapon weaponToEquip) // przygotowanie pod system zmiany broni, moÂ¿e byÃ¦ wywoÂ³ywane po zetknieciu sie z zbieranym przedmiotem, moÂ¿na siÃª pokusic o zmiane na coÅ“ bardziej generycznego np jakies znajdzki typu zdrowie itp
     {
         CurrentWeapon = weaponToEquip;
     }
 
-    public void AimWeapon(Weapon weapon, Vector3 aimPoint) //delikatny ruch broni palnej, broñ nie jest statyczna wzgledem postaci
+    public void AimWeapon(Weapon weapon, Vector3 aimPoint) //delikatny ruch broni palnej, broÃ± nie jest statyczna wzgledem postaci
     {
         if (weapon != null)
         {
-            weapon.Aim(aimPoint);
+            weapon.AimWeapon(aimPoint);
         }
     }
 
@@ -62,7 +62,7 @@ public class WeaponController : MonoBehaviour
             LogNoWeapon();
     }
 
-    private void Reload(Weapon weapon) //przeladowanie po wykonczeniu sie dostepnych pociskow w magazynku, mozna upublicznic i przypisaæ akcje w PlayerController
+    private void Reload(Weapon weapon) //przeladowanie po wykonczeniu sie dostepnych pociskow w magazynku, mozna upublicznic i przypisaÃ¦ akcje w PlayerController
     {
         if (weapon != null)
         {

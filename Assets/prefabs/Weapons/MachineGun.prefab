@@ -289,7 +289,7 @@ Transform:
   m_GameObject: {fileID: 2271915366853142134}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.0286884, y: 0.643, z: 0.551821}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -312,22 +312,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b89f2a2f2ab20d842b7f9413607615a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _projectile: {fileID: -3554787671005744432, guid: 0a6a05c0c79e1404bacfed8dd135465a, type: 3}
-  _projectileParent: {fileID: 6551139042831018961}
+  _weaponData: {fileID: 11400000, guid: 376f62bf467a85c4c8b21890f793f65b, type: 2}
+  _projectileParent: {fileID: 7494341096001371819}
   _shell: {fileID: 5668114462716151633, guid: e901e4c075b1ed444adcf0dc9a08b4d1, type: 3}
   _shellEjectionPoint: {fileID: 4920175662158604087}
   _shootPoint: {fileID: 7693449367179170922}
-  _fireMode: 0
-  _timeGap: 0.1
-  _reloadTime: 4
-  _burstCount: 20
-  _projectilesPerMagazine: 20
-  _recoilKickMinMax: {x: 0.1, y: 0.3}
-  _recoilRotationMinMax: {x: 5, y: 10}
-  _recoilReturnMovementTime: 0.1
-  _recoilReturnRotationTime: 0.1
-  _shotsRemainingInBurst: 0
-  _projectilesRamainingInMagazine: 0
 --- !u!114 &6633745133611554942
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -738,6 +727,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7693449367179170922}
+  - component: {fileID: 3589300882163963840}
   m_Layer: 0
   m_Name: ShootPoint
   m_TagString: Untagged
@@ -760,6 +750,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6551139042831018961}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3589300882163963840
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5440755726305283243}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9452a9d220cefbe4c8b13866db5630dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6088436873702677284
 GameObject:
   m_ObjectHideFlags: 0

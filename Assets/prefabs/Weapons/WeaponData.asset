@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 412e2d97923304a41bef59f4d00e69a2, type: 3}
+  m_Name: WeaponData
+  m_EditorClassIdentifier: 
+  _projectile: {fileID: -3554787671005744432, guid: 0a6a05c0c79e1404bacfed8dd135465a, type: 3}
+  _fireMode: 0
+  _timeGap: 0.1
+  _reloadTime: 2
+  _burstCount: 30
+  _projectilesPerMagazine: 30
+  _recoilKickMinMax: {x: 0.05, y: 0.2}
+  _recoilRotationMinMax: {x: 5, y: 10}
+  _recoilReturnMovementTime: 0.1
+  _recoilReturnRotationTime: 0.1

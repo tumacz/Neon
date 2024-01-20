@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -53,13 +53,13 @@ public class PlayerController : HealthComponent
         if (_direction == new Vector3(0, 0, 0))
             return;
         else
-        transform.forward = new Vector3(_direction.x, 0, _direction.z); 
+            transform.forward = new Vector3(_direction.x, 0, _direction.z);
     }
 
     private void CalcRotatePlayer(Weapon weapon)
     {
         _aimPos = _playerSO.aimPos;
-        _aimPos.y = weapon._shootPoint.transform.position.y; //wartoœæ wektora zawsze w postaci (x,0,z)
+        _aimPos.y = weapon._shootPoint.transform.position.y;
         _direction = (_aimPos - _actualPos.position).normalized;
     }
 
@@ -73,7 +73,7 @@ public class PlayerController : HealthComponent
     {
         if (((new Vector2(_aimPos.x, _aimPos.z) - new Vector2(weapon.transform.position.x, weapon.transform.position.z)).magnitude) > 1)
         {
-            weapon.Aim(_aimPos);
+            weapon.AimWeapon(_aimPos);
         }
 
         if (_shootAction.IsPressed())

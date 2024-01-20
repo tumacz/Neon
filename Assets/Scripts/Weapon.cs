@@ -3,29 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Weapon : MonoBehaviour
+public class Weapon : WeaponBase
 {
-    public enum FireMode { Auto, Burst, Single }//mozna zmienic na np pistol, machinegun, shootgun
-    //to SO
-    [Header("Composition")]
-    [SerializeField] private Projectile _projectile;
+    //public enum FireMode { Auto, Burst, Single }//mozna zmienic na np pistol, machinegun, shootgun
+    [SerializeField] private WeaponData _weaponData;
     [SerializeField] private Transform _projectileParent;
     [SerializeField] private Transform _shell;
     [SerializeField] private Transform _shellEjectionPoint;
     [SerializeField] public Transform _shootPoint;
-    //to SO
-    [Header("Weapon Mode Setup")]
-    [SerializeField] private FireMode _fireMode;
-    [SerializeField] private float _timeGap;
-    [SerializeField] private float _reloadTime = .2f;
-    [SerializeField] private int _burstCount;
-    [SerializeField] private int _projectilesPerMagazine;
-    // to SO
-    [Header("Recoil")]
-    [SerializeField] Vector2 _recoilKickMinMax = new Vector2(.05f, .2f);
-    [SerializeField] Vector2 _recoilRotationMinMax = new Vector2(5, 10);
-    [SerializeField] private float _recoilReturnMovementTime = .1f;
-    [SerializeField] private float _recoilReturnRotationTime = .1f;
 
     // operational variables
     private float _recoilRotationSmoothDampVelocity;
@@ -46,8 +31,8 @@ public class Weapon : MonoBehaviour
         _projectileParent = _dumpster.transform;
         _playerSO = FindObjectOfType<PlayerSO>();
         _muzzleFlash = GetComponent<MuzzleFlash>();
-        _shotsRemainingInBurst = _burstCount;
-        _projectilesRamainingInMagazine = _projectilesPerMagazine;//redo
+        _shotsRemainingInBurst = _weaponData._burstCount;
+        _projectilesRamainingInMagazine = _weaponData._projectilesPerMagazine;//redo
     }
 
     private void LateUpdate()
@@ -58,69 +43,23 @@ public class Weapon : MonoBehaviour
         }
     }
 
-    private void Shoot()
-    {
-        bool canShoot = Time.time > _nextShotTime && _projectilesRamainingInMagazine > 0;
-
-        if (_fireMode == FireMode.Burst)
-        {
-            if (_shotsRemainingInBurst == 0 || !canShoot) return;
-
-            HandleProjectile();
-            _shotsRemainingInBurst--;
-        }
-        else if ((_fireMode == FireMode.Single && _triggerRelasedSinceLastShoot) || _fireMode == FireMode.Auto)
-        {
-            if (canShoot) HandleProjectile();
-        }
-    }
-
     private void HandleProjectile() //redo
     {
-        _nextShotTime = Time.time + _timeGap;
-        Projectile newProjectile = Instantiate(_projectile, _shootPoint.position, _shootPoint.rotation, _projectileParent);
+        _nextShotTime = Time.time + _weaponData._timeGap;
+        Projectile newProjectile = Instantiate(_weaponData._projectile, _shootPoint.position, _shootPoint.rotation, _projectileParent);
         _projectilesRamainingInMagazine--;
         _muzzleFlash.Activate();
         Instantiate(_shell, _shellEjectionPoint.position, _shellEjectionPoint.rotation, _projectileParent);
-        transform.localPosition -= Vector3.forward * UnityEngine.Random.Range(_recoilKickMinMax.x, _recoilKickMinMax.y);
-        _recoilAngle += UnityEngine.Random.Range(_recoilRotationMinMax.x, _recoilRotationMinMax.y);
+        transform.localPosition -= Vector3.forward * UnityEngine.Random.Range(_weaponData._recoilKickMinMax.x, _weaponData._recoilKickMinMax.y);
+        _recoilAngle += UnityEngine.Random.Range(_weaponData._recoilRotationMinMax.x, _weaponData._recoilRotationMinMax.y);
         _recoilAngle = Mathf.Clamp(_recoilAngle, 0, 30);
         StartCoroutine(ApplyRecoil());
-    }
-
-    public void Reload()
-    {
-        if (!_isReloading && _projectilesRamainingInMagazine != _projectilesPerMagazine)
-        {
-            StartCoroutine(AnimateReload());
-        }
-    }
-
-    public void Aim(Vector3 aimPoint)
-    {
-        if (!_isReloading)
-            transform.LookAt(aimPoint);
-    }
-
-    public void OnTriggerHold()
-    {
-        if (!_isReloading)
-        {
-            Shoot();
-            _triggerRelasedSinceLastShoot = false;
-        }
-    }
-
-    public void OnTriggerRelease()
-    {
-        _triggerRelasedSinceLastShoot = true;
-        _shotsRemainingInBurst = _burstCount;
     }
 
     private IEnumerator AnimateReload()
     {
         _isReloading = true;
-        float reloadSpeed = 1f / _reloadTime;
+        float reloadSpeed = 1f / _weaponData._reloadTime;
         float percent = 0;
         Vector3 initialRot = transform.localEulerAngles;
         float maxReloadAngle = 30f;
@@ -135,20 +74,65 @@ public class Weapon : MonoBehaviour
         yield return new WaitForSeconds(.1f);
 
         _isReloading = false;
-        _projectilesRamainingInMagazine = _projectilesPerMagazine;
+        _projectilesRamainingInMagazine = _weaponData._projectilesPerMagazine;
     }
 
     private IEnumerator ApplyRecoil()
     {
         while (Mathf.Abs(_recoilAngle) > 0.01f || Mathf.Abs(transform.localPosition.magnitude) > 0.01f)
         {
-            transform.localPosition = Vector3.SmoothDamp(transform.localPosition, Vector3.zero, ref _recoilSmoothDampVelocity, _recoilReturnMovementTime);
+            transform.localPosition = Vector3.SmoothDamp(transform.localPosition, Vector3.zero, ref _recoilSmoothDampVelocity, _weaponData._recoilReturnMovementTime);
 
-            _recoilAngle = Mathf.SmoothDamp(_recoilAngle, 0, ref _recoilRotationSmoothDampVelocity, _recoilReturnRotationTime);
+            _recoilAngle = Mathf.SmoothDamp(_recoilAngle, 0, ref _recoilRotationSmoothDampVelocity, _weaponData._recoilReturnRotationTime);
             transform.localEulerAngles = transform.localEulerAngles + Vector3.left * _recoilAngle;
 
             yield return null;
         }
     }
-}
 
+    public override void Shoot()
+    {
+        bool canShoot = Time.time > _nextShotTime && _projectilesRamainingInMagazine > 0;
+
+        if (_weaponData._fireMode == WeaponData.FireMode.Burst)
+        {
+            if (_shotsRemainingInBurst == 0 || !canShoot) return;
+
+            HandleProjectile();
+            _shotsRemainingInBurst--;
+        }
+        else if ((_weaponData._fireMode == WeaponData.FireMode.Single && _triggerRelasedSinceLastShoot) || _weaponData._fireMode == WeaponData.FireMode.Auto)
+        {
+            if (canShoot) HandleProjectile();
+        }
+    }
+
+    public override void Reload()
+    {
+        if (!_isReloading && _projectilesRamainingInMagazine != _weaponData._projectilesPerMagazine)
+        {
+            StartCoroutine(AnimateReload());
+        }
+    }
+
+    public override void AimWeapon(Vector3 aimPoint)
+    {
+        if (!_isReloading)
+            transform.LookAt(aimPoint);
+    }
+
+    public override void OnTriggerHold()
+    {
+        if (!_isReloading)
+        {
+            Shoot();
+            _triggerRelasedSinceLastShoot = false;
+        }
+    }
+
+    public override void OnTriggerRelease()
+    {
+        _triggerRelasedSinceLastShoot = true;
+        _shotsRemainingInBurst = _weaponData._burstCount;
+    }
+}
