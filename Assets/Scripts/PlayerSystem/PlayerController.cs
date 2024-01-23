@@ -56,11 +56,15 @@ public class PlayerController : HealthComponent
             transform.forward = new Vector3(_direction.x, 0, _direction.z);
     }
 
-    private void CalcRotatePlayer(Weapon weapon)
+    private void CalcRotatePlayer(WeaponBase weapon)
     {
         _aimPos = _playerSO.aimPos;
-        _aimPos.y = weapon._shootPoint.transform.position.y;
+        _aimPos.y = (weapon is Weapon) ? ((Weapon)weapon)._shootPoint.position.y : ((MeleWeapon)weapon)._shootPoint.position.y;
         _direction = (_aimPos - _actualPos.position).normalized;
+
+        //_aimPos = _playerSO.aimPos;
+        //_aimPos.y = weapon._shootPoint.transform.position.y;
+        //_direction = (_aimPos - _actualPos.position).normalized;
     }
 
     private void CalcMovePlayer()
@@ -69,26 +73,57 @@ public class PlayerController : HealthComponent
         _move = new Vector3(input.x, 0f, input.y).normalized;
     }
 
-    private void UseWeapon(Weapon weapon)
+    private void UseWeapon(WeaponBase weapon)
     {
-        if (((new Vector2(_aimPos.x, _aimPos.z) - new Vector2(weapon.transform.position.x, weapon.transform.position.z)).magnitude) > 1)
+        if (weapon is Weapon)
         {
-            weapon.AimWeapon(_aimPos);
-        }
+            Weapon myWeapon = (Weapon)weapon;
 
-        if (_shootAction.IsPressed())
-        {
-            weapon.OnTriggerHold();
-        }
-        else
-        {
-            StopWeapon(weapon);
-        }
-    }
+            if (((new Vector2(_aimPos.x, _aimPos.z) - new Vector2(myWeapon.transform.position.x, myWeapon.transform.position.z)).magnitude) > 1)
+            {
+                myWeapon.AimWeapon(_aimPos);
+            }
 
-    private void StopWeapon(Weapon weapon)//czy to potrzebne?
-    {
-        weapon.OnTriggerRelease();
+            if (_shootAction.IsPressed())
+            {
+                myWeapon.OnTriggerHold();
+            }
+            else
+            {
+                myWeapon.OnTriggerRelease();
+            }
+        }
+        else if (weapon is MeleWeapon)
+        {
+            MeleWeapon myMeleWeapon = (MeleWeapon)weapon;
+
+            if (((new Vector2(_aimPos.x, _aimPos.z) - new Vector2(myMeleWeapon.transform.position.x, myMeleWeapon.transform.position.z)).magnitude) > 1)
+            {
+                myMeleWeapon.AimWeapon(_aimPos);
+            }
+
+            if (_shootAction.IsPressed())
+            {
+                myMeleWeapon.OnTriggerHold();
+            }
+            else
+            {
+                myMeleWeapon.OnTriggerRelease();
+            }
+        }
+        //if (((new Vector2(_aimPos.x, _aimPos.z) - new Vector2(weapon.transform.position.x, weapon.transform.position.z)).magnitude) > 1)
+        //{
+        //    weapon.AimWeapon(_aimPos);
+        //}
+
+        //if (_shootAction.IsPressed())
+        //{
+        //    weapon.OnTriggerHold();
+        //}
+        //else
+        //{
+        //    weapon.OnTriggerRelease();
+        //}
     }
 
     private void GetReferences()

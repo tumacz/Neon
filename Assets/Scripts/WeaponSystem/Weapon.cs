@@ -31,8 +31,8 @@ public class Weapon : WeaponBase
         _projectileParent = _dumpster.transform;
         _playerSO = FindObjectOfType<PlayerSO>();
         _muzzleFlash = GetComponent<MuzzleFlash>();
-        _shotsRemainingInBurst = _weaponData._burstCount;
-        _projectilesRamainingInMagazine = _weaponData._projectilesPerMagazine;//redo
+       // _shotsRemainingInBurst = _weaponData._burstCount;
+        _projectilesRamainingInMagazine = _weaponData._projectilesPerMagazine;
     }
 
     private void LateUpdate()
