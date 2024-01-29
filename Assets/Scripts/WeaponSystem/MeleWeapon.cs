@@ -5,29 +5,44 @@ using UnityEngine;
 public class MeleWeapon : WeaponBase
 {
     [SerializeField] public Transform _shootPoint;
-    void Start()
-    {
-        Debug.Log("firstattempt");
-    }
+    [SerializeField] Animation _swingAnim;
 
-    void Update()
-    {
+    private Vector3 _recoilSmoothDampVelocity;
+    private float _recoilAngle =  200;
+    private float _recoilRotationSmoothDampVelocity;
 
-    }
+    private float _timeGap = 1f;
+    private float _recoilReturnMovementTime = .5f;
+    private float _recoilReturnRotationTime = .5f;
+    private float _nextShotTime;
+
+    private Vector2 _recoilKickMinMax = new Vector2(.3f, .6f);
+    private Vector2 _recoilRotationMinMax = new Vector2(150, 220);
+
+    private bool _triggerRelasedSinceLastShoot;
+
 
     public override void AimWeapon(Vector3 aimPoint)
     {
+        if (_swingAnim == null)
+        {
             transform.LookAt(aimPoint);
+        }
     }
 
     public override void OnTriggerHold()
     {
-        Debug.Log("Trigger");
+        if (_swingAnim == null)
+        {
+            Shoot();
+            _triggerRelasedSinceLastShoot = false;
+        }
+
     }
 
     public override void OnTriggerRelease()
     {
-        Debug.Log("Release");
+        _triggerRelasedSinceLastShoot = true;
     }
 
     public override void Reload()
@@ -35,8 +50,40 @@ public class MeleWeapon : WeaponBase
         Debug.Log("Reload");
     }
 
-    public override void Shoot()
+    private void Shoot()
     {
-        Debug.Log("Shoot");
+        if (_triggerRelasedSinceLastShoot)
+        {
+            bool canShoot = Time.time > _nextShotTime;
+            if (!canShoot) return;
+            HandleSwing();
+        }
+    }
+
+    private IEnumerator ApplyReturn()
+    {
+        while (Mathf.Abs(_recoilAngle) > 0.01f || Mathf.Abs(transform.localPosition.magnitude) > 0.01f)
+        {
+            //swing up
+            transform.localEulerAngles = transform.localEulerAngles + Vector3.left * _recoilAngle;
+            //swing left
+            transform.localEulerAngles = transform.localEulerAngles + Vector3.down * _recoilAngle;
+            //rotate right
+            transform.localEulerAngles = transform.localEulerAngles + Vector3.forward * _recoilAngle;
+
+            transform.localPosition = Vector3.SmoothDamp(transform.localPosition, Vector3.zero, ref _recoilSmoothDampVelocity, _recoilReturnMovementTime);
+            _recoilAngle = Mathf.SmoothDamp(_recoilAngle, 0, ref _recoilRotationSmoothDampVelocity, _recoilReturnRotationTime);
+
+            yield return null;
+        }
+    }
+    private void HandleSwing()
+    {
+        _nextShotTime = Time.time + _timeGap;
+
+        transform.localPosition -= Vector3.right * UnityEngine.Random.Range(_recoilKickMinMax.x, _recoilKickMinMax.y);
+        _recoilAngle += UnityEngine.Random.Range(_recoilRotationMinMax.x, _recoilRotationMinMax.y);
+        _recoilAngle = Mathf.Clamp(_recoilAngle, _recoilRotationMinMax.x, _recoilRotationMinMax.y);
+        StartCoroutine(ApplyReturn());
     }
 }

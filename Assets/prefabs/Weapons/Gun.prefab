@@ -189,22 +189,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b89f2a2f2ab20d842b7f9413607615a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _projectile: {fileID: -3554787671005744432, guid: 0a6a05c0c79e1404bacfed8dd135465a, type: 3}
+  _weaponData: {fileID: 11400000, guid: 0d850a3d8667b39438b089536c47416f, type: 2}
   _projectileParent: {fileID: 1566522434265596622}
   _shell: {fileID: 5668114462716151633, guid: e901e4c075b1ed444adcf0dc9a08b4d1, type: 3}
   _shellEjectionPoint: {fileID: 1882878029233292107}
   _shootPoint: {fileID: 1320370068263128808}
-  _fireMode: 2
-  _timeGap: 0.2
-  _reloadTime: 3
-  _burstCount: 10
-  _projectilesPerMagazine: 10
-  _recoilKickMinMax: {x: 0.1, y: 0.3}
-  _recoilRotationMinMax: {x: 5, y: 10}
-  _recoilReturnMovementTime: 0.2
-  _recoilReturnRotationTime: 0.2
-  _shotsRemainingInBurst: 0
-  _projectilesRamainingInMagazine: 0
 --- !u!114 &925738015634643490
 MonoBehaviour:
   m_ObjectHideFlags: 0

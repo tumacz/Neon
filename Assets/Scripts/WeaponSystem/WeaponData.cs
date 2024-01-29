@@ -7,6 +7,7 @@ public class WeaponData : ScriptableObject
 
     [Header("Composition")]
     public Projectile _projectile;
+    public Shell _shell;
 
 
     [Header("Weapon Mode Setup")]
@@ -14,7 +15,7 @@ public class WeaponData : ScriptableObject
     public float _timeGap;
     public float _reloadTime = 0.2f;
     public int _burstCount;
-    public int _projectilesPerMagazine;
+    public int _ammoPerMagazine;
 
     [Header("Recoil")]
     public Vector2 _recoilKickMinMax = new Vector2(0.05f, 0.2f);

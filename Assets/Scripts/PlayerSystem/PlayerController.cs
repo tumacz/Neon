@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
@@ -10,7 +9,7 @@ public class PlayerController : HealthComponent
     private CharacterController _controller;
     private WeaponController _weaponController;
     private PlayerInput _playerInput;
-    private Spawner _spawner;//do ukrytego teleportu
+    private Spawner _spawner; //teleport
 
     [SerializeField] private PlayerSO _playerSO;
     [SerializeField] private float _playerSpeed = 6.0f;
@@ -44,12 +43,13 @@ public class PlayerController : HealthComponent
     {
         ExecuteMovement();
         //Teleport();
+        Reload(_weaponController._currentWeapon);
     }
 
     private void ExecuteMovement()
     {
         _controller.Move(_move * Time.deltaTime * _playerSpeed);
-        //redo
+
         if (_direction == new Vector3(0, 0, 0))
             return;
         else
@@ -59,12 +59,14 @@ public class PlayerController : HealthComponent
     private void CalcRotatePlayer(WeaponBase weapon)
     {
         _aimPos = _playerSO.aimPos;
-        _aimPos.y = (weapon is Weapon) ? ((Weapon)weapon)._shootPoint.position.y : ((MeleWeapon)weapon)._shootPoint.position.y;
-        _direction = (_aimPos - _actualPos.position).normalized;
+        if (weapon == null)
+        {
+            _aimPos.y = 0;
+        }
+        else
+            _aimPos.y = (weapon is FireArms) ? ((FireArms)weapon)._shootPoint.position.y : ((MeleWeapon)weapon)._shootPoint.position.y;
 
-        //_aimPos = _playerSO.aimPos;
-        //_aimPos.y = weapon._shootPoint.transform.position.y;
-        //_direction = (_aimPos - _actualPos.position).normalized;
+        _direction = (_aimPos - _actualPos.position).normalized;
     }
 
     private void CalcMovePlayer()
@@ -75,55 +77,22 @@ public class PlayerController : HealthComponent
 
     private void UseWeapon(WeaponBase weapon)
     {
-        if (weapon is Weapon)
+        if (weapon == null)
+            return;
+
+        if (((new Vector2(_aimPos.x, _aimPos.z) - new Vector2(weapon.transform.position.x, weapon.transform.position.z)).magnitude) > 1)
         {
-            Weapon myWeapon = (Weapon)weapon;
-
-            if (((new Vector2(_aimPos.x, _aimPos.z) - new Vector2(myWeapon.transform.position.x, myWeapon.transform.position.z)).magnitude) > 1)
-            {
-                myWeapon.AimWeapon(_aimPos);
-            }
-
-            if (_shootAction.IsPressed())
-            {
-                myWeapon.OnTriggerHold();
-            }
-            else
-            {
-                myWeapon.OnTriggerRelease();
-            }
+            weapon.AimWeapon(_aimPos);
         }
-        else if (weapon is MeleWeapon)
+
+        if (_shootAction.IsPressed())
         {
-            MeleWeapon myMeleWeapon = (MeleWeapon)weapon;
-
-            if (((new Vector2(_aimPos.x, _aimPos.z) - new Vector2(myMeleWeapon.transform.position.x, myMeleWeapon.transform.position.z)).magnitude) > 1)
-            {
-                myMeleWeapon.AimWeapon(_aimPos);
-            }
-
-            if (_shootAction.IsPressed())
-            {
-                myMeleWeapon.OnTriggerHold();
-            }
-            else
-            {
-                myMeleWeapon.OnTriggerRelease();
-            }
+            weapon.OnTriggerHold();
         }
-        //if (((new Vector2(_aimPos.x, _aimPos.z) - new Vector2(weapon.transform.position.x, weapon.transform.position.z)).magnitude) > 1)
-        //{
-        //    weapon.AimWeapon(_aimPos);
-        //}
-
-        //if (_shootAction.IsPressed())
-        //{
-        //    weapon.OnTriggerHold();
-        //}
-        //else
-        //{
-        //    weapon.OnTriggerRelease();
-        //}
+        else
+        {
+            weapon.OnTriggerRelease();
+        }
     }
 
     private void GetReferences()
@@ -132,9 +101,17 @@ public class PlayerController : HealthComponent
         _weaponController = GetComponent<WeaponController>();
         _playerInput = GetComponent<PlayerInput>();
         _spawner = FindObjectOfType<Spawner>();
-        //catche particular actions
+        //catch particular actions
         _moveAction = _playerInput.actions["Move"];
         _shootAction = _playerInput.actions["Shoot"];
+    }
+
+    private void Reload(WeaponBase weapon)
+    {
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            weapon.Reload();
+        }
     }
 
     //private void Teleport()
@@ -144,5 +121,5 @@ public class PlayerController : HealthComponent
     //        _spawner.ResetPlayerPosition();
     //        _playerSO.Test();
     //    }
-    //}
 }
+
