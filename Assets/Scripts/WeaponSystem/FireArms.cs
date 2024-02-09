@@ -6,8 +6,8 @@ using UnityEngine;
 public class FireArms : WeaponBase
 {
     // Eventy na zmianê iloœci amunicji i magazynków
-    public event Action<int> OnAmmoCountChanged; //UI ready!!!
-    public event Action<int> OnMagazinesCountChanged; //UI ready!!!
+    public event Action<int> OnAmmoCountChanged;
+    public event Action<int> OnMagazinesCountChanged;
 
     #region Serializeable
     [SerializeField] private WeaponData _weaponData;

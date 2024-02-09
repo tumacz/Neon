@@ -1,16 +1,19 @@
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
+using Zenject;
 
 public class Spawner : MonoBehaviour
 {
+    //[Inject]
+    private MapProvider _mapGenerator;
+
     public Wawe[] wawes;
     public Enemy enemy;
 
+    //[SerializeField] private PlayerController _playerPrefab;
     private HealthComponent _playerHealthComponent;
     private Transform _playerPosition;
-    private MapGenerator _mapGenerator;
+    private Vector3 _playerSpawnPosition => (_mapGenerator.TileFromPosition(Vector3.zero).position + Vector3.up);
     private Wawe currentWawe;
 
     private int _currentWaweNumber;
@@ -31,16 +34,29 @@ public class Spawner : MonoBehaviour
 
     private void Start()
     {
-        _playerHealthComponent = FindObjectOfType<PlayerController>();
-        _playerPosition = _playerHealthComponent.transform;
-
-        _mapGenerator = FindObjectOfType<MapGenerator>();
+        _mapGenerator = FindObjectOfType<MapProvider>();
         _nextCampCheckTime = _timeBetweenCampaingChecks + Time.time;
+        _playerHealthComponent = FindObjectOfType<HealthComponent>();
+        _playerPosition = _playerHealthComponent.transform;
         campPositionOld = _playerHealthComponent.transform.position;
+        //SpawnPlayer();
         _playerHealthComponent.OnDeath += OnPlayerDeath;
 
         NextWave();
     }
+
+    //private void SpawnPlayer()
+    //{
+    //    if (_playerPrefab != null)
+    //    {
+    //        HealthComponent _playerInstance = Instantiate(_playerPrefab, _mapGenerator.GetRandomOpenTile());
+    //        _playerHealthComponent = _playerInstance.GetComponent<HealthComponent>();
+    //        _playerPosition = _playerHealthComponent.transform;
+    //        campPositionOld = _playerHealthComponent.transform.position;
+    //    }
+    //    else
+    //        Debug.Log("Missing player prefab");
+    //}
 
     private void Update()
     {
@@ -79,7 +95,7 @@ public class Spawner : MonoBehaviour
 
         while (spawnTimer < spawnDelay)
         {
-            tileMat.color = Color.Lerp(inialColor,spawnColor,Mathf.PingPong(spawnTimer*tileFlashSpeed, 1f));
+            tileMat.color = Color.Lerp(inialColor, spawnColor, Mathf.PingPong(spawnTimer * tileFlashSpeed, 1f));
             spawnTimer += Time.deltaTime;
             yield return null;
         }
@@ -105,7 +121,7 @@ public class Spawner : MonoBehaviour
 
     public void ResetPlayerPosition()
     {
-        _playerPosition.gameObject.transform.position = _mapGenerator.TileFromPosition(Vector3.zero).position + Vector3.up * 1;
+        _playerPosition.position = _playerSpawnPosition;
     }
 
     private void OnPlayerDeath()
@@ -119,7 +135,7 @@ public class Spawner : MonoBehaviour
         if (_enemiesRamainingAlive == 0)
         {
             NextWave();
-            ResetPlayerPosition();
+            //ResetPlayerPosition();
         }
     }
 

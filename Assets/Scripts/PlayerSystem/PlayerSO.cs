@@ -14,9 +14,4 @@ public class PlayerSO : ScriptableObject
     {
         return aimPos;
     }
-
-    public void Test()
-    {
-        Debug.Log("testowanko");
-    }
 }

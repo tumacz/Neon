@@ -2,20 +2,35 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using UnityEditor.AI;
+using Unity.AI.Navigation;
 
-[CustomEditor (typeof(MapGenerator))]
+[CustomEditor(typeof(MapGenerator))]
 public class MapEditor : Editor
 {
     public override void OnInspectorGUI()
     {
         MapGenerator map = target as MapGenerator;
-        if(DrawDefaultInspector())
+        NavMeshSurface nav = map.GetComponent<NavMeshSurface>();
+
+        if (DrawDefaultInspector())
+        {
+            map.GenerateMap();
+            if (nav != null)
+            {
+                nav.BuildNavMesh();
+            }
+        }
+        if (GUILayout.Button("Generate Map"))
         {
             map.GenerateMap();
         }
-        if(GUILayout.Button("Generate Map"))
+        if (GUILayout.Button("Build NavMesh"))
         {
-            map.GenerateMap();
+            if (nav != null)
+            {
+                Debug.LogWarning("Kliknij w wygenerowaniej mapie przed zapisaniem");
+            }
         }
     }
 }

@@ -16,9 +16,9 @@ MonoBehaviour:
   _shell: {fileID: 5829405153606237661, guid: e901e4c075b1ed444adcf0dc9a08b4d1, type: 3}
   _fireMode: 0
   _timeGap: 0.1
-  _reloadTime: 2
-  _burstCount: 30
-  _ammoPerMagazine: 30
+  _reloadTime: 1
+  _burstCount: 50
+  _ammoPerMagazine: 50
   _recoilKickMinMax: {x: 0.05, y: 0.2}
   _recoilRotationMinMax: {x: 5, y: 10}
   _recoilReturnMovementTime: 0.1

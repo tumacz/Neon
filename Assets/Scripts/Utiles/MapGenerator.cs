@@ -1,15 +1,13 @@
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using System.Net.NetworkInformation;
-using UnityEngine.Tilemaps;
+using System;
 
 public class MapGenerator : MonoBehaviour
 {
     public Map[] maps;
     public int mapIndex;
 
+    [SerializeField] private Transform _navMeshClone;
     [SerializeField] private Transform _tilePrefab;
     [SerializeField] private Transform _obstaclePrefab;
     [SerializeField] private Transform _navMeshFloor;
@@ -21,15 +19,9 @@ public class MapGenerator : MonoBehaviour
     private List<Coord> _allTileCoords;
     private Queue<Coord> _shuffledTileCoords;
     private Queue<Coord> _shuffledOpenTileCoords;
-    Transform[,] _tileMap; 
+    private Transform[,] _tileMap;
 
     public Map _currentMap;
-
-    void Start()
-    {
-        GenerateMap();
-        FindObjectOfType<Spawner>().OnNewWave += OnNewWave;
-    }
 
     private void OnNewWave(int waveNumber)
     {
@@ -48,7 +40,14 @@ public class MapGenerator : MonoBehaviour
         GenerateObstacles(mapHolder);
         GenerateBoundries(mapHolder);
 
-        _navMeshFloor.localScale = new Vector3(_currentMap._mapSize.x, _currentMap._mapSize.y) * _tileSize;
+
+        if (_navMeshFloor != null)
+        {
+            Transform navMeshClone = Instantiate(_navMeshFloor, transform.position, transform.rotation, transform);
+            navMeshClone.localScale = new Vector3(_currentMap._mapSize.x, _currentMap._mapSize.y) * _tileSize;
+            navMeshClone.SetParent(mapHolder);
+            _navMeshClone = navMeshClone;
+        }
     }
 
     private string GenerateMapHolder()
@@ -74,6 +73,8 @@ public class MapGenerator : MonoBehaviour
                 newTile.localScale = Vector3.one * (1 - _outlinePercent) * _tileSize;
                 newTile.parent = mapHolder;
                 _tileMap[x, y] = newTile;
+                newTile.GetComponent<Tile>().SetCoord(x,y);
+                newTile.GetComponent<Tile>()._catchTileSize = _tileSize;
             }
         }
         return mapHolder;
@@ -114,15 +115,18 @@ public class MapGenerator : MonoBehaviour
                 float obstacleHeight = Mathf.Lerp(_currentMap._minObstacleHeight, _currentMap._maxObstacleHeight, (float) prng.NextDouble());
                 Vector3 obstaclePosition = CoordToPosition(randomCoord.x, randomCoord.y);
 
-                Transform newObstacle = Instantiate(_obstaclePrefab, obstaclePosition + Vector3.up * obstacleHeight/2f, Quaternion.identity) as Transform;
-                newObstacle.parent = mapHolder;
-                newObstacle.localScale = new Vector3((1 - _outlinePercent) * _tileSize, obstacleHeight, (1- _outlinePercent)*_tileSize);
+                Transform tile = _tileMap[randomCoord.x, randomCoord.y];
+                Transform newObstacle = Instantiate(_obstaclePrefab, tile.position + Vector3.up * obstacleHeight/2f, Quaternion.identity) as Transform;
+                tile.GetComponent<Tile>().isOccupied = true;
 
-                Renderer obstacleRenderer = newObstacle.GetComponent<Renderer>();
-                Material obstacleMaterial = new Material(obstacleRenderer.sharedMaterial);
-                float colorPrecent = randomCoord.y / (float)_currentMap._mapSize.y;
-                obstacleMaterial.color = Color.Lerp(_currentMap._foregroundColour, _currentMap._backgroundColour, colorPrecent);
-                obstacleRenderer.sharedMaterial = obstacleMaterial;
+                newObstacle.localScale = new Vector3((1 - _outlinePercent) * _tileSize, obstacleHeight, (1- _outlinePercent)*_tileSize);
+                newObstacle.SetParent(tile);
+
+                //Renderer obstacleRenderer = newObstacle.GetComponent<Renderer>();
+                //Material obstacleMaterial = new Material(obstacleRenderer.sharedMaterial);
+                //float colorPrecent = randomCoord.y / (float)_currentMap._mapSize.y;
+                //obstacleMaterial.color = Color.Lerp(_currentMap._foregroundColour, _currentMap._backgroundColour, colorPrecent);
+                //obstacleRenderer.sharedMaterial = obstacleMaterial;
 
                 allOpenCoords.Remove(randomCoord);
             }
@@ -212,7 +216,7 @@ public class MapGenerator : MonoBehaviour
         return _tileMap[x, y];
     }
 
-    public Coord GetRandomCoord()
+    private Coord GetRandomCoord()
     {
         Coord randomCoord = _shuffledTileCoords.Dequeue();
         _shuffledTileCoords.Enqueue(randomCoord);

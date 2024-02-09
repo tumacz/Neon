@@ -175,7 +175,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1862081201198949273}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -314,9 +314,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _weaponData: {fileID: 11400000, guid: 376f62bf467a85c4c8b21890f793f65b, type: 2}
   _projectileParent: {fileID: 7494341096001371819}
-  _shell: {fileID: 5668114462716151633, guid: e901e4c075b1ed444adcf0dc9a08b4d1, type: 3}
   _shellEjectionPoint: {fileID: 4920175662158604087}
   _shootPoint: {fileID: 7693449367179170922}
+  _magazinesCount: 100
 --- !u!114 &6633745133611554942
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -474,7 +474,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3314834501591029016}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -663,7 +663,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4278246376680514371}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
