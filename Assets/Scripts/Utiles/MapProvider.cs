@@ -13,30 +13,63 @@ public class MapProvider : MonoBehaviour
     private float _tileSize;
     private int _mapsizeX;
     private int _mapsizeY;
+    private Queue<GameObject> _mapQueue;
+    Tile[] tiles = null;
 
     private void Start()
     {
+        _mapQueue = new Queue<GameObject>();
+
         if (_mapList != null && _mapList.Count > 0)
         {
-            GameObject selectedMap = _mapList[Random.Range(0, _mapList.Count)];
-            GameObject instantiatedMap = Instantiate(selectedMap, transform.position, Quaternion.identity);
-            if(_map != null) { _map = null; }
-            _map = instantiatedMap;
+            foreach (GameObject map in _mapList)
+            {
+                _mapQueue.Enqueue(map);
+            }
+            if (_mapQueue.Count > 0)
+            {
+                GameObject selectedMap = _mapQueue.Dequeue();
+                _map = Instantiate(selectedMap, transform.position, Quaternion.identity);
+            }
+            else
+            {
+                Debug.LogError("Map queue is empty!");
+            }
+            RecollectTiles();
+        }
+    }
 
+    public void NextMap()
+    {
+        if (_mapQueue.Count > 0)
+        {
+            if (_map != null)
+            {
+                _map.SetActive(false);
+                Destroy(_map);
+                _map = null;
+                tiles = null;
+            }
+            GameObject selectedMap = _mapQueue.Dequeue();
+            _map = Instantiate(selectedMap, transform.position, Quaternion.identity);
             RecollectTiles();
         }
         else
         {
-            Debug.LogError("List is empty or invalid!");
+            Debug.Log("no maps in queue");
         }
     }
 
     private void RecollectTiles()
     {
-        Tile[] tiles = FindObjectsOfType<Tile>();
+        
+        tiles = FindObjectsOfType<Tile>();
         int maxX = int.MinValue;
         int maxY = int.MinValue;
         float maxTileSize = float.MinValue;
+
+        _allUnoccupiedTileCoords.Clear();
+
         foreach (Tile tile in tiles)
         {
             if (tile.coord.x > maxX)
@@ -56,12 +89,14 @@ public class MapProvider : MonoBehaviour
                 maxTileSize = tile._catchTileSize;
             }
         }
+
         _tileMap = new Transform[maxX + 1, maxY + 1];
 
         foreach (Tile tile in tiles)
         {
             _tileMap[tile.coord.x, tile.coord.y] = tile.transform;
         }
+
         _tileSize = maxTileSize;
         _mapsizeX = maxX;
         _mapsizeY = maxY;
@@ -73,9 +108,15 @@ public class MapProvider : MonoBehaviour
         int y = Mathf.RoundToInt(position.z / _tileSize + (_mapsizeY - 1) / 2f);
         x = Mathf.Clamp(x, 0, _tileMap.GetLength(0) - 1);
         y = Mathf.Clamp(y, 0, _tileMap.GetLength(1) - 1);
-        return _tileMap[x, y];
+        if (_tileMap != null)
+        {
+            return _tileMap[x, y];
+        }
+        else
+        {
+            return null;
+        }
     }
-
 
     public Transform GetRandomOpenTile()
     {

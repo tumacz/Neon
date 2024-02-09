@@ -144,6 +144,16 @@ public class PlayerController : HealthComponent
         }
     }
 
+    public void Respawn()
+    {
+        if (!_isTeleporting)
+        {
+            _isTeleporting = true;
+            StartCoroutine(PerformTeleport());
+        }
+    }
+
+
     private IEnumerator PerformTeleport()
     {
         _controller.enabled = false;
