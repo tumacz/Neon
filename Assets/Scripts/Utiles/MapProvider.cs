@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static Tile;
 
@@ -9,17 +10,17 @@ public class MapProvider : MonoBehaviour
 
     public GameObject _map;
     private Transform[,] _tileMap;
-    private List<Coord> _allUnoccupiedTileCoords = new List<Coord>();
+    public List<Coord> _allUnoccupiedTileCoords = new List<Coord>();
     private float _tileSize;
     private int _mapsizeX;
     private int _mapsizeY;
     private Queue<GameObject> _mapQueue;
     Tile[] tiles = null;
+    List<Transform> _tileList;
 
     private void Start()
     {
         _mapQueue = new Queue<GameObject>();
-
         if (_mapList != null && _mapList.Count > 0)
         {
             foreach (GameObject map in _mapList)
@@ -62,39 +63,38 @@ public class MapProvider : MonoBehaviour
 
     private void RecollectTiles()
     {
-        
-        tiles = FindObjectsOfType<Tile>();
+        _tileList = _map.GetComponent<TileRunner>()._tileList;
+
         int maxX = int.MinValue;
         int maxY = int.MinValue;
         float maxTileSize = float.MinValue;
-
         _allUnoccupiedTileCoords.Clear();
 
-        foreach (Tile tile in tiles)
+        foreach (Tile tileComponent in _tileList.Select(t => t.GetComponent<Tile>()))
         {
-            if (tile.coord.x > maxX)
+            if (tileComponent.coord.x > maxX)
             {
-                maxX = tile.coord.x;
+                maxX = tileComponent.coord.x;
             }
-            if (tile.coord.y > maxY)
+            if (tileComponent.coord.y > maxY)
             {
-                maxY = tile.coord.y;
+                maxY = tileComponent.coord.y;
             }
-            if (!tile.isOccupied)
+            if (!tileComponent.isOccupied)
             {
-                _allUnoccupiedTileCoords.Add(tile.coord);
+                _allUnoccupiedTileCoords.Add(tileComponent.coord);
             }
-            if (tile._catchTileSize > maxTileSize)
+            if (tileComponent._catchTileSize > maxTileSize)
             {
-                maxTileSize = tile._catchTileSize;
+                maxTileSize = tileComponent._catchTileSize;
             }
         }
 
         _tileMap = new Transform[maxX + 1, maxY + 1];
 
-        foreach (Tile tile in tiles)
+        foreach (Tile tileComponent in _tileList.Select(t => t.GetComponent<Tile>()))
         {
-            _tileMap[tile.coord.x, tile.coord.y] = tile.transform;
+            _tileMap[tileComponent.coord.x, tileComponent.coord.y] = tileComponent.transform;
         }
 
         _tileSize = maxTileSize;

@@ -29,7 +29,7 @@ public class Spawner : MonoBehaviour
     private bool isCamping;
     private bool isDiseabled;
 
-    public event System.Action<int> OnNewWave;
+    //public event System.Action<int> OnNewWave;
 
     private void Start()
     {

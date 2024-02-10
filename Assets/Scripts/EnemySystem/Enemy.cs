@@ -57,7 +57,9 @@ public class Enemy : HealthComponent
     {
         if (damage >= _health)
         {
+#pragma warning disable CS0618 // Typ lub sk³adowa jest przestarza³a
             Destroy(Instantiate(_enemyHitEffect, hitPoint, Quaternion.FromToRotation(Vector3.forward, hitDirection)) as ParticleSystem, _enemyHitEffect.startLifetime);
+#pragma warning restore CS0618 // Typ lub sk³adowa jest przestarza³a
         }
         base.TakeHit(damage, hitPoint, hitDirection);
     }

@@ -1,6 +1,9 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using Unity.VisualScripting;
+using UnityEngine.Tilemaps;
+using static Tile;
 
 public class MapGenerator : MonoBehaviour
 {
@@ -33,10 +36,12 @@ public class MapGenerator : MonoBehaviour
     {
         _currentMap = maps[mapIndex];
         _tileMap = new Transform[_currentMap._mapSize.x, _currentMap._mapSize.y];
-        GetComponent<BoxCollider>().size = new Vector3(_currentMap._mapSize.x * _tileSize,0.5f, _currentMap._mapSize.y * _tileSize);
+        //GetComponent<BoxCollider>().size = new Vector3(_currentMap._mapSize.x * _tileSize,0.5f, _currentMap._mapSize.y * _tileSize);
         GenerateCoords();
         string holderName = GenerateMapHolder();
+
         Transform mapHolder = GenerateTiles(holderName);
+
         GenerateObstacles(mapHolder);
         GenerateBoundries(mapHolder);
 
@@ -63,6 +68,8 @@ public class MapGenerator : MonoBehaviour
     private Transform GenerateTiles(string holderName)
     {
         Transform mapHolder = new GameObject(holderName).transform;
+        TileRunner tilerunner = mapHolder.gameObject.AddComponent<TileRunner>();
+        //tilerunner.TileMap = new Transform[_currentMap._mapSize.x, _currentMap._mapSize.y];
         mapHolder.parent = transform;
         for (int x = 0; x < _currentMap._mapSize.x; x++)
         {
@@ -73,13 +80,15 @@ public class MapGenerator : MonoBehaviour
                 newTile.localScale = Vector3.one * (1 - _outlinePercent) * _tileSize;
                 newTile.parent = mapHolder;
                 _tileMap[x, y] = newTile;
+
                 newTile.GetComponent<Tile>().SetCoord(x,y);
                 newTile.GetComponent<Tile>()._catchTileSize = _tileSize;
+                tilerunner._tileList.Add(newTile);
             }
         }
         return mapHolder;
     }
-
+    
     private void GenerateCoords()
     {
         _allTileCoords = new List<Coord>();

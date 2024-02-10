@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Tile : MonoBehaviour
+public class Tile: MonoBehaviour
 {
     public Coord coord;
     public bool isOccupied = false;

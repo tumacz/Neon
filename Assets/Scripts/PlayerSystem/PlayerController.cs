@@ -13,7 +13,7 @@ public class PlayerController : HealthComponent
 
     public event Action OnStartShoot;
     public event Action OnStopShoot;
-    public event Action OnTeleport;
+    //public event Action OnTeleport;
 
     [SerializeField] private PlayerSO _playerSO;
     [SerializeField] private float _playerSpeed = 6.0f;
@@ -168,6 +168,6 @@ public class PlayerController : HealthComponent
     {
         OnStartShoot -= () => _weaponController.OnTriggerHold(_weaponController._currentWeapon);
         OnStopShoot -= () => _weaponController.OnTriggerRelease(_weaponController._currentWeapon);
-        OnTeleport -= () => _spawner.ResetPlayerPosition();
+        //OnTeleport -= () => _spawner.ResetPlayerPosition();
     }
 }
