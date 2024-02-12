@@ -11,8 +11,9 @@ public class Spawner : MonoBehaviour
     public Enemy enemy;
 
     //[SerializeField] private PlayerController _playerPrefab;
-    private HealthComponent _playerHealthComponent;
-    private Transform _playerPosition => _playerHealthComponent.transform;
+    private PlayerController _playerController;
+    //private HealthComponent _playerHealthComponent;
+    private Transform _playerPosition => _playerController.transform;
     private Wawe currentWawe;
 
     private int _currentWaweNumber;
@@ -30,16 +31,22 @@ public class Spawner : MonoBehaviour
     private bool isDiseabled;
 
     //public event System.Action<int> OnNewWave;
+    [Inject]
+    public void Construct(PlayerController playerController)
+    {
+        _playerController = playerController;
+        Debug.Log("spawnerInstalled");
+    }
 
     private void Start()
     {
         _mapProvider = FindObjectOfType<MapProvider>();
         _nextCampCheckTime = _timeBetweenCampaingChecks + Time.time;
-        _playerHealthComponent = FindObjectOfType<HealthComponent>();
-        //_playerPosition = _playerHealthComponent.transform;
-        campPositionOld = _playerHealthComponent.transform.position;
+        //_playerHealthComponent = FindObjectOfType<HealthComponent>();
+        campPositionOld = _playerController.transform.position;
         //SpawnPlayer();
-        _playerHealthComponent.OnDeath += OnPlayerDeath;
+        _playerController.GetComponent<HealthComponent>().OnDeath += OnPlayerDeath;
+        _playerController.Respawn();
         NextWave();
     }
 
@@ -99,7 +106,8 @@ public class Spawner : MonoBehaviour
             yield return null;
         }
 
-        Enemy spawnedEnemy = Instantiate(enemy, randomTile.position + Vector3.up, Quaternion.identity) as Enemy;
+        //spawn
+        Enemy spawnedEnemy = Instantiate(enemy, randomTile.position + Vector3.up, Quaternion.identity);
         spawnedEnemy.OnDeath += OnEnemyDeath;
         spawnedEnemy.SetCharacteristics(currentWawe.moveSpeed, currentWawe.hitsToKillPlayer, currentWawe.enemyHealth, currentWawe.enemyColor);
     }
@@ -123,7 +131,6 @@ public class Spawner : MonoBehaviour
 
     public void ResetPlayerPosition()
     {
-        Debug.Log("reset");
         _playerPosition.position = _mapProvider.GetRandomOpenTile().position;
     }
 
@@ -134,14 +141,13 @@ public class Spawner : MonoBehaviour
 
     private void OnEnemyDeath()
     {
-        
         _enemiesRamainingAlive --;
         if (_enemiesRamainingAlive == 0)
         {
             _mapProvider.NextMap();
             //_mapProvider = FindObjectOfType<MapProvider>();
             NextWave();
-            _playerHealthComponent.GetComponent<PlayerController>().Respawn(); //turn off PlayerController
+            _playerController.Respawn(); //turn off PlayerController
         }
     }
 
@@ -158,7 +164,6 @@ public class Spawner : MonoBehaviour
         public bool infinite;
     }
 }
-
 
 //private void SpawnPlayer()
 //{

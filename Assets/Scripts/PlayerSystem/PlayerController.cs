@@ -153,7 +153,6 @@ public class PlayerController : HealthComponent
         }
     }
 
-
     private IEnumerator PerformTeleport()
     {
         _controller.enabled = false;

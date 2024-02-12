@@ -15,7 +15,6 @@ public class MapProvider : MonoBehaviour
     private int _mapsizeX;
     private int _mapsizeY;
     private Queue<GameObject> _mapQueue;
-    Tile[] tiles = null;
     List<Transform> _tileList;
 
     private void Start()
@@ -49,7 +48,6 @@ public class MapProvider : MonoBehaviour
                 _map.SetActive(false);
                 Destroy(_map);
                 _map = null;
-                tiles = null;
             }
             GameObject selectedMap = _mapQueue.Dequeue();
             _map = Instantiate(selectedMap, transform.position, Quaternion.identity);
@@ -70,23 +68,23 @@ public class MapProvider : MonoBehaviour
         float maxTileSize = float.MinValue;
         _allUnoccupiedTileCoords.Clear();
 
-        foreach (Tile tileComponent in _tileList.Select(t => t.GetComponent<Tile>()))
+        foreach (Tile tile in _tileList.Select(t => t.GetComponent<Tile>()))
         {
-            if (tileComponent.coord.x > maxX)
+            if (tile.coord.x > maxX)
             {
-                maxX = tileComponent.coord.x;
+                maxX = tile.coord.x;
             }
-            if (tileComponent.coord.y > maxY)
+            if (tile.coord.y > maxY)
             {
-                maxY = tileComponent.coord.y;
+                maxY = tile.coord.y;
             }
-            if (!tileComponent.isOccupied)
+            if (!tile.isOccupied)
             {
-                _allUnoccupiedTileCoords.Add(tileComponent.coord);
+                _allUnoccupiedTileCoords.Add(tile.coord);
             }
-            if (tileComponent._catchTileSize > maxTileSize)
+            if (tile._catchTileSize > maxTileSize)
             {
-                maxTileSize = tileComponent._catchTileSize;
+                maxTileSize = tile._catchTileSize;
             }
         }
 

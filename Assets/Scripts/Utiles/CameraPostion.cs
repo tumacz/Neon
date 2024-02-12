@@ -1,33 +1,35 @@
 using Cinemachine;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
+using Zenject;
 
 public class CameraPostion : MonoBehaviour
 {
+    private PlayerController _playerController;
+
     [SerializeField] private Camera _mainCam;
-    [SerializeField] private Transform player;
     [SerializeField] private float threshold;
     [SerializeField] private LayerMask _layerMaskGround;
     [SerializeField] private PlayerSO _playerSO;
 
+    [Inject]
+    public void Construct(PlayerController playerController)
+    {
+        _playerController = playerController;
+        Debug.Log("camerainstaled");
+    }
+
     void Update()
     {
-        if(player != null)
+        if(_playerController != null)
         {
             Ray ray = _mainCam.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, _layerMaskGround))
-            {
-                //Debug.Log(raycastHit.point);
-            }
-
+            Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, _layerMaskGround);
             Vector3 mousePos = raycastHit.point;
             _playerSO.aimPos = mousePos;
-            Vector3 targetPos = (player.position + mousePos) / 2f;
+            Vector3 targetPos = (_playerController.transform.position + mousePos) / 2f;
 
-            targetPos.x = Mathf.Clamp(targetPos.x, -threshold + player.position.x, threshold + player.position.x);
-            targetPos.z = Mathf.Clamp(targetPos.z, -threshold + player.position.z, threshold + player.position.z);
+            targetPos.x = Mathf.Clamp(targetPos.x, -threshold + _playerController.transform.position.x, threshold + _playerController.transform.position.x);
+            targetPos.z = Mathf.Clamp(targetPos.z, -threshold + _playerController.transform.position.z, threshold + _playerController.transform.position.z);
 
             this.transform.position = new Vector3(targetPos.x, 0, targetPos.z);
         }

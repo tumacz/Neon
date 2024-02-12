@@ -29,16 +29,15 @@ public class Enemy : HealthComponent
     {
         _nav = GetComponent<NavMeshAgent>();
 
-
-        if (GameObject.FindGameObjectWithTag("Player") != null)
+        GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
+        if (playerObject != null)
         {
-
-            _target = GameObject.FindGameObjectWithTag("Player").transform;
-            _targetHealth = _target.GetComponent<HealthComponent>();
+            _target = playerObject.transform;
+            _targetHealth = playerObject.GetComponent<HealthComponent>();
             _hasTarget = true;
 
             _enemyCollsionRadius = GetComponent<CapsuleCollider>().radius;
-            _targetCollsionRadius = _target.GetComponent<CapsuleCollider>().radius;
+            _targetCollsionRadius = playerObject.GetComponent<CapsuleCollider>().radius;
         }
     }
     protected override void Start()
