@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Zenject;
 
 public class GameUI : MonoBehaviour
 {
@@ -10,6 +11,13 @@ public class GameUI : MonoBehaviour
     [SerializeField] private Image _fadeScreen;
     [SerializeField] GameObject _gameOverUI;
     [SerializeField] Crosshair _crosshair;
+
+    [Inject]
+    public void Construct(PlayerController playerController)
+    {
+        _playerController = playerController;
+        Debug.Log("GameUI installed");
+    }
 
     void Start()
     {
@@ -24,7 +32,6 @@ public class GameUI : MonoBehaviour
     {
         _gameOverUI.SetActive(true);
         StartCoroutine(Fade(Color.clear, Color.black, 1f));
-        
     }
 
     IEnumerator Fade(Color from, Color to, float time)
@@ -42,7 +49,6 @@ public class GameUI : MonoBehaviour
 
     private void GetReferences()
     {
-        _playerController = FindObjectOfType<PlayerController>();
         _playerController.OnDeath += OnGameOver;
     }
 

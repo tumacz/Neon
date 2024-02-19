@@ -2,8 +2,9 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Zenject;
 
-[RequireComponent(typeof(CharacterController))]
+[RequireComponent(typeof(CharacterController), typeof(WeaponController))]
 public class PlayerController : HealthComponent
 {
     private CharacterController _controller;
@@ -28,6 +29,13 @@ public class PlayerController : HealthComponent
     private InputAction _shootAction;
     private InputAction _reloadAction;
     private InputAction _teleportAction;
+
+    [Inject]
+    public void Construct(Spawner spawner)
+    {
+        _spawner = spawner;
+        Debug.Log("spawner installed");
+    }
 
     private void Awake()
     {
@@ -62,6 +70,7 @@ public class PlayerController : HealthComponent
 
     private void FixedUpdate()
     {
+        if(!_isTeleporting)
         ExecuteMovement();
     }
 
@@ -119,7 +128,6 @@ public class PlayerController : HealthComponent
         _input = new PlayerControls();
         _controller = GetComponent<CharacterController>();
         _weaponController = GetComponent<WeaponController>();
-        _spawner = FindObjectOfType<Spawner>();
 
         _moveAction = _input.Player.Move;
         _shootAction = _input.Player.Shoot;

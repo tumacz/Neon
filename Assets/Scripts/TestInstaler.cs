@@ -6,6 +6,8 @@ public class TestInstaler : MonoInstaller
     public override void InstallBindings()
     {
         Container.Bind<PlayerController>().FromComponentInHierarchy().AsSingle();
-        Container.Bind<CameraPostion>().FromComponentInHierarchy().AsSingle();
+        Container.Bind<MapProvider>().FromComponentInHierarchy().AsSingle();
+        Container.Bind<Spawner>().FromComponentInHierarchy().AsSingle();
+        Container.Bind<Dumpster>().FromComponentInHierarchy().AsSingle();
     }
 }

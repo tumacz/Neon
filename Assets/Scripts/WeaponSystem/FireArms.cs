@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 public class FireArms : WeaponBase
 {
@@ -36,6 +37,8 @@ public class FireArms : WeaponBase
     private int _ammoRamainingInMagazine;
     public int _magazinesCount = 2;
     #endregion
+
+
 
     private void Start()
     {
@@ -171,9 +174,14 @@ public class FireArms : WeaponBase
         _ammoRemainingInBurst = _weaponData._burstCount;
     }
 
+    public override void SetDumpster(Dumpster dumpster)
+    {
+        _dumpster = dumpster;
+    }
+
     private void GetReferences()
     {
-        _dumpster = FindObjectOfType<Dumpster>();
+        //_dumpster = FindObjectOfType<Dumpster>();
         _projectileParent = _dumpster.transform;
         _muzzleFlash = GetComponent<MuzzleFlash>();
     }

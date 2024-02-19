@@ -15,7 +15,7 @@ public class CameraPostion : MonoBehaviour
     public void Construct(PlayerController playerController)
     {
         _playerController = playerController;
-        Debug.Log("camerainstaled");
+        Debug.Log("CameraPosition installed");
     }
 
     void Update()

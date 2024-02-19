@@ -4,45 +4,38 @@ using Zenject;
 
 public class Spawner : MonoBehaviour
 {
-    //[Inject]
+    //[SerializeField] private PlayerController _playerPrefab;
     private MapProvider _mapProvider;
+    private PlayerController _playerController;
+    private Transform _playerPosition => _playerController.transform;
 
     public Wawe[] wawes;
-    public Enemy enemy;
-
-    //[SerializeField] private PlayerController _playerPrefab;
-    private PlayerController _playerController;
-    //private HealthComponent _playerHealthComponent;
-    private Transform _playerPosition => _playerController.transform;
     private Wawe currentWawe;
-
+    public Enemy enemy;
     private int _currentWaweNumber;
     private int _enemiesToSpawn;
     private int _enemiesRamainingAlive;
-
     private float _nextSpawnTime;
     private float _timeBetweenCampaingChecks = 2f;
     private float _nextCampCheckTime;
     private float _campThresholdDistance = 1.5f;
-
     private Vector3 campPositionOld;
-
     private bool isCamping;
     private bool isDiseabled;
 
     //public event System.Action<int> OnNewWave;
+
     [Inject]
-    public void Construct(PlayerController playerController)
+    public void Construct(PlayerController playerController, MapProvider mapProvider)
     {
         _playerController = playerController;
+        _mapProvider = mapProvider;
         Debug.Log("spawnerInstalled");
     }
 
     private void Start()
     {
-        _mapProvider = FindObjectOfType<MapProvider>();
         _nextCampCheckTime = _timeBetweenCampaingChecks + Time.time;
-        //_playerHealthComponent = FindObjectOfType<HealthComponent>();
         campPositionOld = _playerController.transform.position;
         //SpawnPlayer();
         _playerController.GetComponent<HealthComponent>().OnDeath += OnPlayerDeath;
@@ -109,6 +102,7 @@ public class Spawner : MonoBehaviour
         //spawn
         Enemy spawnedEnemy = Instantiate(enemy, randomTile.position + Vector3.up, Quaternion.identity);
         spawnedEnemy.OnDeath += OnEnemyDeath;
+        spawnedEnemy.SetTarget(_playerController);
         spawnedEnemy.SetCharacteristics(currentWawe.moveSpeed, currentWawe.hitsToKillPlayer, currentWawe.enemyHealth, currentWawe.enemyColor);
     }
 
@@ -131,7 +125,7 @@ public class Spawner : MonoBehaviour
 
     public void ResetPlayerPosition()
     {
-        _playerPosition.position = _mapProvider.GetRandomOpenTile().position;
+        _playerPosition.position = _mapProvider.GetRandomOpenTile().position + Vector3.up;
     }
 
     private void OnPlayerDeath()

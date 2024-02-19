@@ -1,10 +1,19 @@
 ﻿using UnityEngine;
+using Zenject;
 
 public class WeaponController : MonoBehaviour
 {
     [SerializeField] private Transform _weaponHolder;
     [SerializeField] private WeaponBase _startWeapon;
     public WeaponBase _currentWeapon;
+    private Dumpster _dumpster;
+
+    [Inject]
+    public void Construct(Dumpster dumpster)
+    {
+        _dumpster = dumpster;
+        Debug.Log("dumpster installed");
+    }
 
     private void Start()
     {
@@ -24,6 +33,10 @@ public class WeaponController : MonoBehaviour
                 _currentWeapon = null;
             }
             _currentWeapon = Instantiate(value, _weaponHolder.position, _weaponHolder.rotation, _weaponHolder);
+            if(_currentWeapon is FireArms)
+            {
+                _currentWeapon.SetDumpster(_dumpster);
+            }
         }
     }
 

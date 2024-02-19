@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,7 +18,7 @@ public class Enemy : HealthComponent
 
     [SerializeField] private float _attackDistanceThreshold = 0.5f;
     [SerializeField] private float _timeBetweenAttacks = 5f;
-    [SerializeField] private float _nextAttackTime;
+    private float _nextAttackTime;
     [SerializeField] private Color _originalColor;
     [SerializeField] private ParticleSystem _enemyHitEffect;
     [SerializeField] private int _damageRate = 1;
@@ -28,17 +29,6 @@ public class Enemy : HealthComponent
     private void Awake()
     {
         _nav = GetComponent<NavMeshAgent>();
-
-        GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
-        if (playerObject != null)
-        {
-            _target = playerObject.transform;
-            _targetHealth = playerObject.GetComponent<HealthComponent>();
-            _hasTarget = true;
-
-            _enemyCollsionRadius = GetComponent<CapsuleCollider>().radius;
-            _targetCollsionRadius = playerObject.GetComponent<CapsuleCollider>().radius;
-        }
     }
     protected override void Start()
     {
@@ -128,6 +118,22 @@ public class Enemy : HealthComponent
         }
     }
 
+    private void OnTargetDeath()
+    {
+        _hasTarget = false;
+        _currentState = State.Idle;
+    }
+
+    public void SetTarget(PlayerController playerController)
+    {
+        _target = playerController.transform;
+        _targetHealth = playerController.GetComponent<HealthComponent>();
+        _hasTarget = true;
+
+        _enemyCollsionRadius = GetComponent<CapsuleCollider>().radius;
+        _targetCollsionRadius = playerController.GetComponent<CapsuleCollider>().radius;
+    }
+
     public void SetCharacteristics(float moveSpeed, int hitsToKillPlayer, int enemyHealth, Color skinColour)
     {
         _nav.speed = moveSpeed;
@@ -141,11 +147,5 @@ public class Enemy : HealthComponent
         _skinMaterial = GetComponent<Renderer>().sharedMaterial;
         _skinMaterial.color = skinColour;
         _originalColor = _skinMaterial.color;
-    }
-
-    private void OnTargetDeath()
-    {
-        _hasTarget = false;
-        _currentState = State.Idle;
     }
 }

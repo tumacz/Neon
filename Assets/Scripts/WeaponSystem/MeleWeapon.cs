@@ -7,6 +7,8 @@ public class MeleWeapon : WeaponBase
     [SerializeField] public Transform _shootPoint;
     [SerializeField] Animation _swingAnim;
 
+    private Dumpster _dumpster;
+
     private Vector3 _recoilSmoothDampVelocity;
     private float _recoilAngle =  200;
     private float _recoilRotationSmoothDampVelocity;
@@ -48,6 +50,10 @@ public class MeleWeapon : WeaponBase
     public override void Reload()
     {
         Debug.Log("Reload");
+    }
+    public override void SetDumpster(Dumpster dumpster)
+    {
+        _dumpster = dumpster;
     }
 
     private void Shoot()
