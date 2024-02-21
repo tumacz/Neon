@@ -6,10 +6,6 @@ using Zenject;
 
 public class FireArms : WeaponBase
 {
-    // Eventy na zmianê iloœci amunicji i magazynków
-    public event Action<int> OnAmmoCountChanged;
-    public event Action<int> OnMagazinesCountChanged;
-
     #region Serializeable
     [SerializeField] private WeaponData _weaponData;
     [SerializeField] private Transform _projectileParent;
@@ -39,7 +35,6 @@ public class FireArms : WeaponBase
     #endregion
 
 
-
     private void Start()
     {
         GetReferences();
@@ -47,7 +42,7 @@ public class FireArms : WeaponBase
         _ammoRamainingInMagazine = _weaponData._ammoPerMagazine;
     }
 
-    private void LateUpdate()//events?
+    private void LateUpdate()
     {
         if (!_isReloading && _ammoRamainingInMagazine == 0 )
         {
@@ -74,12 +69,6 @@ public class FireArms : WeaponBase
         _recoilAngle += UnityEngine.Random.Range(_weaponData._recoilRotationMinMax.x, _weaponData._recoilRotationMinMax.y);
         _recoilAngle = Mathf.Clamp(_recoilAngle, 0, 30);
         StartCoroutine(ApplyRecoil());
-
-        if (OnAmmoCountChanged != null)
-            OnAmmoCountChanged.Invoke(_ammoRamainingInMagazine);
-
-        if (OnMagazinesCountChanged != null)
-            OnMagazinesCountChanged.Invoke(_magazinesCount);
     }
 
     private IEnumerator AnimateReload()
@@ -102,12 +91,6 @@ public class FireArms : WeaponBase
 
         _isReloading = false;
         _ammoRamainingInMagazine = _weaponData._ammoPerMagazine;
-
-        if (OnAmmoCountChanged != null)
-            OnAmmoCountChanged.Invoke(_ammoRamainingInMagazine);
-
-        if (OnMagazinesCountChanged != null)
-            OnMagazinesCountChanged.Invoke(_magazinesCount);
     }
 
     private IEnumerator ApplyRecoil()
@@ -174,15 +157,24 @@ public class FireArms : WeaponBase
         _ammoRemainingInBurst = _weaponData._burstCount;
     }
 
+    private void GetReferences()
+    {
+        _projectileParent = _dumpster.transform;
+        _muzzleFlash = GetComponent<MuzzleFlash>();
+    }
+
+    public override int GetAmmoCount()
+    {
+        return _ammoRamainingInMagazine;
+    }
+
+    public override int GetMagazinesCount()
+    {
+        return _magazinesCount;
+    }
+
     public override void SetDumpster(Dumpster dumpster)
     {
         _dumpster = dumpster;
-    }
-
-    private void GetReferences()
-    {
-        //_dumpster = FindObjectOfType<Dumpster>();
-        _projectileParent = _dumpster.transform;
-        _muzzleFlash = GetComponent<MuzzleFlash>();
     }
 }

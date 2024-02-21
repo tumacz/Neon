@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using Zenject;
 
 public class WeaponController : MonoBehaviour
@@ -7,9 +8,10 @@ public class WeaponController : MonoBehaviour
     [SerializeField] private WeaponBase _startWeapon;
     public WeaponBase _currentWeapon;
     private Dumpster _dumpster;
+    public event Action<IWeapon> OnWeaponUIUpdate;
 
     [Inject]
-    public void Construct(Dumpster dumpster)
+    private void Construct(Dumpster dumpster)
     {
         _dumpster = dumpster;
         Debug.Log("dumpster installed");
@@ -43,6 +45,7 @@ public class WeaponController : MonoBehaviour
     public void EquipWeapon(WeaponBase weaponToEquip)
     {
         CurrentWeapon = weaponToEquip;
+        UpdateWeaponUI(weaponToEquip);
     }
 
     public void AimWeapon(WeaponBase weapon, Vector3 aimPoint)
@@ -58,6 +61,7 @@ public class WeaponController : MonoBehaviour
         if (weapon != null)
         {
             weapon.OnTriggerHold();
+            UpdateWeaponUI(weapon);
         }
         else
         {
@@ -70,6 +74,7 @@ public class WeaponController : MonoBehaviour
         if (weapon != null)
         {
             weapon.OnTriggerRelease();
+            UpdateWeaponUI(weapon);
         }
         else
         {
@@ -82,7 +87,13 @@ public class WeaponController : MonoBehaviour
         if (weapon != null)
         {
             weapon.Reload();
+            UpdateWeaponUI(weapon);
         }
+    }
+
+    private void UpdateWeaponUI(WeaponBase weapon)
+    {
+        OnWeaponUIUpdate?.Invoke(weapon);
     }
 
     private void LogNoWeapon()

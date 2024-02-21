@@ -92,4 +92,14 @@ public class MeleWeapon : WeaponBase
         _recoilAngle = Mathf.Clamp(_recoilAngle, _recoilRotationMinMax.x, _recoilRotationMinMax.y);
         StartCoroutine(ApplyReturn());
     }
+
+    public override int GetAmmoCount()
+    {
+        return 0;
+    }
+
+    public override int GetMagazinesCount()
+    {
+        return 0;
+    }
 }

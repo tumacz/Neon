@@ -6,4 +6,6 @@ public interface IWeapon
     void AimWeapon(Vector3 aimPoint);
     void OnTriggerHold();
     void OnTriggerRelease();
+    int GetAmmoCount();
+    int GetMagazinesCount();
 }

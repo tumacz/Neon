@@ -9,5 +9,6 @@ public class TestInstaler : MonoInstaller
         Container.Bind<MapProvider>().FromComponentInHierarchy().AsSingle();
         Container.Bind<Spawner>().FromComponentInHierarchy().AsSingle();
         Container.Bind<Dumpster>().FromComponentInHierarchy().AsSingle();
+        Container.Bind<WeaponController>().FromComponentInHierarchy().AsSingle().NonLazy();
     }
 }
