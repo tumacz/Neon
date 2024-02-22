@@ -21,8 +21,8 @@ public class WeaponUI : MonoBehaviour
 
     private void HandleUpdateWeaponUI(IWeapon weapon)
     {
-        UpdateAmmoUI(weapon.GetAmmoCount()); // Aktualizacja iloœci amunicji
-        UpdateMagazinesUI(weapon.GetMagazinesCount()); // Aktualizacja iloœci magazynków
+        UpdateAmmoUI(weapon.GetAmmoCount());
+        UpdateMagazinesUI(weapon.GetMagazinesCount());
     }
 
     private void UpdateAmmoUI(int ammoCount)
